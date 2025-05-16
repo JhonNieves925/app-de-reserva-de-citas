@@ -39,9 +39,16 @@
     .presentation .description {
       max-width: 50%;
     }
-  </style>
+
+</style>
 </head>
 <body>
+
+<header class="bg-primary py-3">
+    <div class="container">
+        <h1 class="text-white" style="font-family: 'Brush Script MT', cursive; font-size: 2.5rem;">Mi Agenda</h1>
+    </div>
+</header>
 
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg navbar-dark">
@@ -78,19 +85,15 @@
     </div>
   </nav>
 
-  <!-- Encabezado de bienvenida -->
-<div id="inicio" class="contenido" style="display: block;">
-    <h1 style="text-align: center; margin-top: 2rem;">Bienvenido a <strong>Mi Agenda</strong></h1>
-    <p style="text-align: center; max-width: 700px; margin: 0 auto;">
-        Agenda tus citas de manera rápida y eficiente. Consulta servicios disponibles, elige profesionales
-        y asegura tu espacio con un solo clic.
-    </p>
-    <div style="display: flex; justify-content: center; margin-top: 2rem;">
-        <img src="{{ asset('storage/citas-medicas.jpg') }}" alt="Bienvenida"
-             style="max-width: 600px; border-radius: 10px;">
-    </div>
-</div>
-
+  <section class="position-relative">
+  <img src="{{ asset('storage/citas-medicas.jpg') }}" alt="banner" class="img-fluid w-100" style="height: 500px; object-fit: cover;">
+  
+  <div class="position-absolute top-50 start-50 translate-middle text-center text-white">
+    <h2 class="display-5 fw-bold">Programa Tu Cita Médica Con Facilidad</h2>
+    <p class="lead">Reserva tu cita en línea de manera rápida y sencilla. Confía en nuestros profesionales para cuidar de tu salud.</p>
+    <a href="#agendar" class="btn btn-outline-light btn-lg">Explorar</a>
+  </div>
+</section>
 
   <!-- CALENDARIO -->
   <div class="container mt-5" id="calendarContainer" style="display: none;">
@@ -133,11 +136,9 @@
   </div>
 
   <!-- FOOTER -->
-  <footer class="footer mt-5">
-    <div class="container">
-      <p>&copy; 2025 Mi Agenda. Todos los derechos reservados.</p>
-    </div>
-  </footer>
+  <footer class="bg-dark text-white text-center py-3 mt-5">
+  <p>&copy; {{ date('Y') }} Jhon Nieves. Todos los derechos reservados.</p>
+</footer>
 
   <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
