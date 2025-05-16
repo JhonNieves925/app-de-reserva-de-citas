@@ -40,6 +40,30 @@
       max-width: 50%;
     }
 
+    
+  .contenido {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+    
+  }
+  
+
+  .contenido.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .contenido:not(.visible) {
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+
+
+
 </style>
 </head>
 <body>
@@ -65,8 +89,9 @@
         </li>
           </li>
           <a class="nav-link" href="{{ route('citas.index') }}">Mis Citas</a>
-          <li class="nav-item"><a class="nav-link" href="#">Servicios</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Contacto / Ayuda</a></li>
+          <li class="nav-item"><a class="nav-link nav-btn" href="#" data-target="servicios">Servicios</a></li>
+          <li class="nav-item"><a class="nav-link nav-btn" href="#" data-target="contacto">Contacto / Ayuda</a></li>
+
         </ul>
         <ul class="navbar-nav">
           @if(Auth::check())
@@ -85,18 +110,21 @@
     </div>
   </nav>
 
-  <section class="position-relative">
-  <img src="{{ asset('storage/citas-medicas.jpg') }}" alt="banner" class="img-fluid w-100" style="height: 500px; object-fit: cover;">
-  
-  <div class="position-absolute top-50 start-50 translate-middle text-center text-white">
-    <h2 class="display-5 fw-bold">Programa Tu Cita Médica Con Facilidad</h2>
-    <p class="lead">Reserva tu cita en línea de manera rápida y sencilla. Confía en nuestros profesionales para cuidar de tu salud.</p>
-    <a href="#agendar" class="btn btn-outline-light btn-lg">Explorar</a>
-  </div>
-</section>
+  <!-- ENVOLVER el banner con ID e incluir clase "contenido" -->
+<div id="inicio" class="contenido">
+  <section class="position-relative contenido" id="inicio">
+    <img src="{{ asset('storage/fondo3.jpg') }}" alt="banner" class="img-fluid w-100" style="height: 500px; object-fit: cover;">
+    <div class="position-absolute top-50 start-50 translate-middle text-center text-white">
+      <h2 class="display-5 fw-bold">Programa Tu Cita Médica Con Facilidad</h2>
+      <p class="lead">Reserva tu cita en línea de manera rápida y sencilla. Confía en nuestros profesionales para cuidar de tu salud.</p>
+      <a href="#" class="btn btn-outline-light btn-lg nav-btn" data-target="calendarContainer">Explorar</a>
+    </div>
+  </section>
+</div>
+
 
   <!-- CALENDARIO -->
-  <div class="container mt-5" id="calendarContainer" style="display: none;">
+  <div class="container mt-5 contenido" id="calendarContainer">
     <h2 class="text-center mb-4">Agendar Cita</h2>
     <div id="calendar"></div>
   </div>
@@ -135,6 +163,19 @@
     </div>
   </div>
 
+  <!-- SERVICIOS -->
+<div class="container mt-5 contenido" id="servicios" style="display: none;">
+  <h2 class="text-center mb-4">Nuestros Servicios</h2>
+  <p class="text-center">Aquí puedes describir los diferentes tipos de servicios que ofrece tu clínica o empresa.</p>
+</div>
+
+<!-- CONTACTO / AYUDA -->
+<div class="container mt-5 contenido" id="contacto" style="display: none;">
+  <h2 class="text-center mb-4">Contacto y Ayuda</h2>
+  <p class="text-center">¿Necesitas ayuda? Contáctanos en nuestro correo o por teléfono. Aquí puedes poner un formulario de contacto también.</p>
+</div>
+
+
   <!-- FOOTER -->
   <footer class="bg-dark text-white text-center py-3 mt-5">
   <p>&copy; {{ date('Y') }} Jhon Nieves. Todos los derechos reservados.</p>
@@ -143,40 +184,51 @@
   <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-  <script>
+ <script>
   let calendar = null;
+
+  function showContent(targetId) {
+    document.querySelectorAll('.contenido').forEach(div => {
+      if (div.id === targetId) {
+        div.classList.add('visible');
+      } else {
+        div.classList.remove('visible');
+      }
+    });
+
+    if (targetId === 'calendarContainer') {
+      setTimeout(() => {
+        if (!calendar) {
+          const calendarEl = document.getElementById('calendar');
+          calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            dateClick: function(info) {
+              document.getElementById('fecha').value = info.dateStr;
+              const citaModal = new bootstrap.Modal(document.getElementById('citaModal'));
+              citaModal.show();
+            }
+          });
+          calendar.render();
+        }
+      }, 300); // Esperamos que termine la animación
+    } else {
+      if (calendar) {
+        calendar.destroy();
+        calendar = null;
+        document.getElementById('calendar').innerHTML = '';
+      }
+    }
+  }
 
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', function () {
-      document.querySelectorAll('.contenido').forEach(div => div.style.display = 'none');
-
       const target = this.getAttribute('data-target');
-      document.getElementById(target).style.display = 'block';
-
-      // Si estamos cambiando de vista, destruir el calendario si existe
-      if (target !== 'calendarContainer' && calendar) {
-        calendar.destroy();
-        calendar = null;
-        document.getElementById('calendar').innerHTML = ''; // Limpia el HTML
-      }
-
-      // Si entramos al calendario y aún no está creado, lo creamos
-      if (target === 'calendarContainer' && !calendar) {
-        const calendarEl = document.getElementById('calendar');
-        calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          locale: 'es',
-          dateClick: function(info) {
-            document.getElementById('fecha').value = info.dateStr;
-            const citaModal = new bootstrap.Modal(document.getElementById('citaModal'));
-            citaModal.show();
-          }
-        });
-        calendar.render();
-      }
+      showContent(target);
     });
   });
 </script>
+
 
 
 </body>
